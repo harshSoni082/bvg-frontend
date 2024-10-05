@@ -9,6 +9,26 @@ function App() {
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const formatText = (text) => {
+    if (!text) return null;
+
+    // Convert new lines to <br>
+    let formattedText = text.replace(/\n/g, "<br/>");
+
+    // Convert URLs to clickable links
+    formattedText = formattedText.replace(
+      /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
+      '<a class="text-blue-600 underline" href="$1" target="_blank" rel="noopener noreferrer">$1</a>',
+    );
+
+    // Convert hashtags to clickable links
+    formattedText = formattedText.replace(
+      /((#)[a-zA-Z0-9]*)/gi,
+      '<p class="inline-grid text-blue-600 underline cursor-pointer">$1</p>',
+    );
+    return formattedText;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -25,7 +45,7 @@ function App() {
       );
 
       const data = await response.json();
-      setAnswer(data.answer);
+      setAnswer(formatText(data.answer));
     } catch (error) {
       console.error(error);
     }
@@ -36,7 +56,10 @@ function App() {
     <div className="relative h-screen w-screen">
       <div className="absolute h-screen w-screen bg-gradient-to-br from-blue-200 to-purple-300 -z-10 opacity-50"></div>
       <div className="flex flex-col items-center justify-center h-full z-20">
-        <h1 className="text-7xl font-bold mb-10 text-gray-800">Saarthi</h1>
+        <h1 className="text-7xl font-bold mb-5 text-gray-800">Saarthi</h1>
+        <h1 className="text-md mb-10 text-gray-500">
+          Get your questions answered from learnings of the Bhagavad Gita
+        </h1>
         <div className="flex w-full max-w-3xl px-4">
           <div className="relative h-full w-full mr-2">
             <div className="absolute inset-0 blur-sm bg-white rounded-lg -z-10"></div>
@@ -60,8 +83,8 @@ function App() {
           </Button>
         </div>
         {answer && (
-          <div className="relative mt-8 p-4 bg-white/70 rounded-lg overflow-y-auto max-h-48 w-[60vw]">
-            <p>{answer}</p>
+          <div className="relative mt-8 p-4 bg-white/70 rounded-lg overflow-y-auto max-h-52 w-[60vw]">
+            <div dangerouslySetInnerHTML={{ __html: answer }} />
           </div>
         )}
       </div>
